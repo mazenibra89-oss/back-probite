@@ -16,18 +16,25 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'Owner'
   }
-}, { timestamps: true });
+}, { 
+  timestamps: true // Otomatis membuat createdAt dan updatedAt
+});
 
-// Otomatis Hash Password sebelum disimpan ke database
-userSchema.pre('save', async function(next) {
-  if (!this.isModified('password')) return next();
-  
+/**
+ * Middleware pre-save untuk Hashing Password.
+ * Kita menggunakan async function tanpa parameter 'next'.
+ * Mongoose secara otomatis menangani penyelesaian fungsi async.
+ */
+userSchema.pre('save', async function() {
+  // Hanya jalankan hashing jika password baru atau sedang diubah
+  if (!this.isModified('password')) return;
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
   } catch (error) {
-    next(error);
+    // Jika terjadi error, lemparkan error agar proses save berhenti
+    throw error;
   }
 });
 

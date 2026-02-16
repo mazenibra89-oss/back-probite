@@ -20,7 +20,7 @@ const app = express();
 app.use(cors({
   origin: true, // Set true untuk mengizinkan semua domain selama masa development/deploy
   credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 }));
 
 // Middleware untuk membaca JSON body

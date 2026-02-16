@@ -2,7 +2,13 @@ const express = require('express');
 const router = express.Router();
 const saleController = require('../controllers/saleController');
 
-router.post('/', saleController.createSale); // Ini untuk Customer Checkout
-router.get('/history', saleController.getSalesHistory); // Ini untuk Admin Panel
+// Route untuk Customer Checkout
+router.post('/', saleController.createSale);
+
+// Route untuk Admin melihat riwayat
+router.get('/history', saleController.getSalesHistory);
+
+// Route untuk Admin mengubah status pembayaran (Tombol "Sudah Dibayar")
+router.put('/:id/status', saleController.updateSaleStatus);
 
 module.exports = router;

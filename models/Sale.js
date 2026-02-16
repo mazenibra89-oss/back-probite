@@ -7,13 +7,14 @@ const saleSchema = new mongoose.Schema({
     name: String,
     quantity: Number,
     price: Number,
-    hpp: Number // Disimpan saat transaksi agar laporan profit akurat meski harga berubah
+    hpp: Number
   }],
   totalAmount: { type: Number, required: true },
   totalProfit: { type: Number, required: true },
   paymentMethod: { type: String, default: 'Cash' },
   city: { type: String, default: 'Semarang' },
-  status: { type: String, default: 'Selesai' }
+  status: { type: String, default: 'Selesai' },
+  paid: { type: Boolean, default: false } // Field baru untuk status pembayaran
 }, { timestamps: true });
 
 module.exports = mongoose.model('Sale', saleSchema);

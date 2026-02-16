@@ -18,9 +18,9 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use('/', (req, res) => {
-  res.send('Selamat datang di API POS!');
-});
+// app.use('/', (req, res) => {
+//   res.send('Selamat datang di API POS!');
+// });
 
 app.use('/api/auth', authRoutes);
 

@@ -4,36 +4,59 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const seedAdmin = require('./seeders/adminSeeder');
 
+// Load environment variables
 dotenv.config();
 
+// Import Routes
 const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+const saleRoutes = require('./routes/saleRoutes');
+
 const app = express();
 
-// PENTING: Ganti origin dengan domain Vercel kamu
+// --- MIDDLEWARE ---
+
+// Konfigurasi CORS: Mengizinkan frontend (Vercel) mengakses backend
 app.use(cors({
-  origin: true, // Mengizinkan semua domain (termasuk vercel) untuk sementara
+  origin: true, // Set true untuk mengizinkan semua domain selama masa development/deploy
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"]
 }));
 
+// Middleware untuk membaca JSON body
 app.use(express.json());
 
-// app.use('/', (req, res) => {
-//   res.send('Selamat datang di API POS!');
-// });
+// --- ROUTES ---
 
+// Route Dashboard/Check (Optional)
+app.get('/', (req, res) => {
+  res.send('🚀 Probite POS API is running...');
+});
+
+// Pendaftaran Endpoint API
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/sales', saleRoutes);
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log('✅ MongoDB Terhubung!');
-    // Jalankan migrasi data setiap server restart
-    await seedAdmin(); 
-  })
-  .catch(err => console.error('❌ MongoDB Error:', err.message));
+// --- DATABASE & SERVER ---
 
 const PORT = process.env.PORT || 5000;
-// Di server sendiri, gunakan 0.0.0.0 agar bisa diakses dari IP publik
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Server berjalan di port ${PORT}`);
-});
+const MONGO_URI = process.env.MONGO_URI;
+
+mongoose.connect(MONGO_URI)
+  .then(async () => {
+    console.log('✅ MongoDB Terhubung!');
+    
+    // Jalankan migrasi/seed admin otomatis saat server pertama kali jalan
+    await seedAdmin(); 
+
+    // Jalankan Server setelah database terhubung
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`🚀 Server berjalan di http://localhost:${PORT}`);
+      console.log(`📡 Akses publik tersedia melalui port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('❌ MongoDB Connection Error:', err.message);
+    process.exit(1); // Hentikan proses jika DB tidak bisa terhubung
+  });
